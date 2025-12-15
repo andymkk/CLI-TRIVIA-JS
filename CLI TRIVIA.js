@@ -1,40 +1,45 @@
-
 const readline = require('readline');
 
-const questions = [
+const kenyaQuestions = [
     {
-        question: "What is the capital of France?",
-        choices: ["London", "Berlin", "Paris", "Madrid"],
-        answer: 2
+        question: "What is the capital city of Kenya?",
+        choices: ["Mombasa", "Nairobi", "Kisumu", "Nakuru"],
+        answer: 1,
+        category: "Geography"
     },
     {
-        question: "Which planet is known as the Red Planet?",
-        choices: ["Venus", "Mars", "Jupiter", "Saturn"],
-        answer: 1
+        question: "Which mountain is the highest in Kenya?",
+        choices: ["Mount Elgon", "Mount Kenya", "Mount Kilimanjaro", "Mount Longonot"],
+        answer: 1,
+        category: "Geography"
     },
     {
-        question: "What is the largest mammal?",
-        choices: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
-        answer: 1
+        question: "What is the official language of Kenya?",
+        choices: ["Swahili", "English", "Kikuyu", "Swahili and English"],
+        answer: 3,
+        category: "Culture"
     },
     {
-        question: "Who painted the Mona Lisa?",
-        choices: ["Van Gogh", "Picasso", "Da Vinci", "Michelangelo"],
-        answer: 2
+        question: "Which lake in Kenya is famous for flamingos?",
+        choices: ["Lake Victoria", "Lake Nakuru", "Lake Naivasha", "Lake Turkana"],
+        answer: 1,
+        category: "Wildlife"
     },
     {
-        question: "What is the chemical symbol for gold?",
-        choices: ["Go", "Gd", "Au", "Ag"],
-        answer: 2
+        question: "In which year did Kenya gain independence?",
+        choices: ["1957", "1960", "1963", "1965"],
+        answer: 2,
+        category: "History"
     }
 ];
 
 const game = {
     score: 0,
     currentQuestion: 0,
-    timeLeft: 10,
+    timeLeft: 15,
     timer: null,
-    playing: false
+    playing: false,
+    totalTime: 0
 };
 
 const rl = readline.createInterface({
@@ -44,17 +49,19 @@ const rl = readline.createInterface({
 
 function showWelcome() {
     console.clear();
-    console.log("=== TRIVIA GAME ===");
-    console.log("\nHow to play:");
-    console.log("- You have 10 seconds per question");
+    console.log("=== KENYA TRIVIA GAME ===");
+    console.log("\nTest your knowledge about Kenya!");
+    console.log("\nRules:");
+    console.log("- You have 15 seconds per question");
     console.log("- Type 1, 2, 3, or 4 to answer");
-    console.log("- Try to get the highest score!\n");
+    console.log("- Try to get all questions right!\n");
 }
 
 function startGame() {
     game.score = 0;
     game.currentQuestion = 0;
     game.playing = true;
+    game.totalTime = 0;
     
     console.log("Game starting...\n");
     
@@ -62,14 +69,15 @@ function startGame() {
 }
 
 function askQuestion() {
-    if (!game.playing || game.currentQuestion >= questions.length) {
+    if (!game.playing || game.currentQuestion >= kenyaQuestions.length) {
         endGame();
         return;
     }
     
-    const q = questions[game.currentQuestion];
+    const q = kenyaQuestions[game.currentQuestion];
     
-    console.log(`Question ${game.currentQuestion + 1}/${questions.length}`);
+    console.log(`Question ${game.currentQuestion + 1}/${kenyaQuestions.length}`);
+    console.log(`Category: ${q.category}`);
     console.log(`\n${q.question}\n`);
     
     q.choices.forEach((choice, index) => {
@@ -84,7 +92,7 @@ function askQuestion() {
 }
 
 function startTimer() {
-    game.timeLeft = 10;
+    game.timeLeft = 15;
     
     if (game.timer) {
         clearInterval(game.timer);
@@ -105,15 +113,21 @@ function startTimer() {
 function checkAnswer(input) {
     clearInterval(game.timer);
     
-    const choice = parseInt(input);
-    const q = questions[game.currentQuestion];
+    const userAnswer = parseInt(input);
+    const q = kenyaQuestions[game.currentQuestion];
     
-    if (choice === q.answer + 1) {
+    if (isNaN(userAnswer) || userAnswer < 1 || userAnswer > 4) {
+        console.log("\nPlease enter a number between 1 and 4");
+        askQuestion();
+        return;
+    }
+    
+    if (userAnswer === q.answer + 1) {
         game.score++;
-        console.log("\n✓ Correct!");
+        console.log("\nCorrect! Well done!");
     } else {
-        console.log("\n✗ Wrong!");
-        console.log(`Correct answer: ${q.answer + 1}. ${q.choices[q.answer]}`);
+        console.log("\nWrong answer!");
+        console.log(`The correct answer is: ${q.answer + 1}. ${q.choices[q.answer]}`);
     }
     
     showScore();
@@ -121,8 +135,8 @@ function checkAnswer(input) {
 }
 
 function showCorrectAnswer() {
-    const q = questions[game.currentQuestion];
-    console.log(`Correct answer: ${q.answer + 1}. ${q.choices[q.answer]}`);
+    const q = kenyaQuestions[game.currentQuestion];
+    console.log(`The correct answer is: ${q.answer + 1}. ${q.choices[q.answer]}`);
 }
 
 function showScore() {
@@ -133,7 +147,7 @@ function showScore() {
 function nextQuestion() {
     setTimeout(() => {
         game.currentQuestion++;
-        if (game.currentQuestion < questions.length) {
+        if (game.currentQuestion < kenyaQuestions.length) {
             askQuestion();
         } else {
             endGame();
@@ -145,39 +159,37 @@ function endGame() {
     game.playing = false;
     
     console.log("\n=== GAME OVER ===");
-    console.log(`Final score: ${game.score}/${questions.length}`);
+    console.log(`Final score: ${game.score}/${kenyaQuestions.length}`);
     
-    const percent = Math.round((game.score / questions.length) * 100);
+    const percent = Math.round((game.score / kenyaQuestions.length) * 100);
     
     if (percent === 100) {
-        console.log("Perfect! You're amazing!");
+        console.log("Perfect! You know Kenya very well!");
     } else if (percent >= 80) {
-        console.log("Great job!");
+        console.log("Excellent! You're almost an expert!");
     } else if (percent >= 60) {
-        console.log("Good work!");
+        console.log("Good job! You know a lot about Kenya!");
+    } else if (percent >= 40) {
+        console.log("Not bad! Keep learning!");
     } else {
-        console.log("Keep practicing!");
+        console.log("Keep exploring Kenya's rich culture!");
     }
     
-    const easyQuestions = questions.filter(q => {
-        const easyWords = ["capital", "planet", "largest"];
-        return easyWords.some(word => q.question.includes(word));
-    });
-    
-    const hardQuestions = questions.filter(q => {
-        const hardWords = ["painted", "chemical"];
-        return hardWords.some(word => q.question.includes(word));
-    });
+    const geographyQuestions = kenyaQuestions.filter(q => q.category === "Geography");
+    const cultureQuestions = kenyaQuestions.filter(q => q.category === "Culture");
     
     console.log(`\nGame stats:`);
-    console.log(`- Easy questions: ${easyQuestions.length}`);
-    console.log(`- Hard questions: ${hardQuestions.length}`);
+    console.log(`- Geography questions: ${geographyQuestions.length}`);
+    console.log(`- Culture questions: ${cultureQuestions.length}`);
+    
+    const allCategories = kenyaQuestions.map(q => q.category);
+    console.log(`- All categories: ${allCategories.join(", ")}`);
     
     rl.question("\nPlay again? (yes/no): ", (answer) => {
         if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
             startGame();
         } else {
-            console.log("\nThanks for playing!");
+            console.log("\nAsante sana for playing! Goodbye!");
             rl.close();
         }
     });
@@ -191,7 +203,7 @@ function main() {
     });
     
     process.on('SIGINT', () => {
-        console.log("\n\nGame stopped. Goodbye!");
+        console.log("\n\nGame stopped. Kwaheri!");
         rl.close();
         process.exit(0);
     });
